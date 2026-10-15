@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .hero {
+            background: url('https://picsum.photos/1200/400?farm') center/cover no-repeat;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-feed {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 10px;
+            width: calc(33% - 20px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            margin: 10px 0;
+        }
+
+        .filter-container {
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Agriculture Marketplace</h1>
+</header>
+
+<div class="hero">
+    <h2>Connecting Local Farmers with You</h2>
+</div>
+
+<div class="container">
+    <div class="filter-container">
+        <input type="text" id="search" placeholder="Search products..." oninput="filterProducts()">
+        <select id="category" onchange="filterProducts()">
+            <option value="">All Categories</option>
+            <option value="Grains">Grains</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Fruits">Fruits</option>
+        </select>
+    </div>
+
+    <div class="product-feed" id="productFeed">
+        <div class="product-card" data-category="Vegetables">
+            <h3>Organic Tomatoes</h3>
+            <div class="product-info">Price: $2.00/kg</div>
+            <div class="product-info">Stock: 50kg</div>
+            <div class="product-info">Region: California</div>
+            <button onclick="openModal('Organic Tomatoes', 2.00)">Add to Cart</button>
+        </div>
+        <div class="product-card" data-category="Grains">
+            <h3>Rice</h3>
+            <div class="product-info">Price: $1.50/kg</div>
+            <div class="product-info">Stock: 100kg</div>
+            <div class="product-info">Region: Texas</div>
+            <button onclick="openModal('Rice', 1.50)">Add to Cart</button>
+        </div>
+        <div class="product-card" data-category="Grains">
+            <h3>Maize</h3>
+            <div class="product-info">Price: $1.00/kg</div>
+            <div class="product-info">Stock: 200kg</div>
+            <div class="product-info">Region: Iowa</div>
+            <button onclick="openModal('Maize', 1.00)">Add to Cart</button>
+        </div>
+        <div class="product-card" data-category="Vegetables">
+            <h3>Cassava</h3>
+            <div class="product-info">Price: $0.80/kg</div>
+            <div class="product-info">Stock: 80kg</div>
+            <div class="product-info">Region: Florida</div>
+            <button onclick="openModal('Cassava', 0.80)">Add to Cart</button>
+        </div>
+    </div>
+</div>
+
+<div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Item Added to Cart</h2>
+        <p id="modal-product-name"></p>
+        <p>Price: $<span id="modal-product-price"></span>/kg</p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    function filterProducts() {
+        const searchInput = document.getElementById('search').value.toLowerCase();
+        const categoryInput = document.getElementById('category').value;
+        const cards = document.querySelectorAll('.product-card');
+
+        cards.forEach(card => {
+            const title = card.querySelector('h3').innerText.toLowerCase();
+            const category = card.getAttribute('data-category');
+
+            if (title.includes(searchInput) && (categoryInput === '' || category === categoryInput)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function openModal(productName, productPrice) {
+        document.getElementById('modal-product-name').innerText = productName;
+        document.getElementById('modal-product-price').innerText = productPrice.toFixed(2);
+        document.getElementById('cartModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('cartModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('cartModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>
